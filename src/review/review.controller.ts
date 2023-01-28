@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Param,
   Post,
-  Query,
 } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { ReviewService } from './review.service';
@@ -20,8 +19,8 @@ export class ReviewController {
     this.reviewService.create(dto);
   }
 
-  @Delete('delete')
-  async delete(@Query('id') id: string) {
+  @Delete('delete/:id')
+  async delete(@Param('id') id: string) {
     const deletedReview = await this.reviewService.delete(id);
     if (!deletedReview) {
       throw new HttpException(
