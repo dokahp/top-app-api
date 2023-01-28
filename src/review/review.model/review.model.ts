@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class ReviewModel {
@@ -13,6 +14,9 @@ export class ReviewModel {
 
   @Prop()
   rating: number;
+
+  @Prop()
+  productId: Types.ObjectId;
 }
 
 export const ReviewSchema = SchemaFactory.createForClass(ReviewModel);
