@@ -16,7 +16,7 @@ export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
   @Post('create')
   async create(@Body() dto: CreateReviewDto) {
-    this.reviewService.create(dto);
+    return this.reviewService.create(dto);
   }
 
   @Delete('delete/:id')
