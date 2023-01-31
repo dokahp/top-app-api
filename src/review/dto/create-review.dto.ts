@@ -11,7 +11,7 @@ export class CreateReviewDto {
   description: string;
 
   @Max(5)
-  @Min(0)
+  @Min(1)
   @IsNumber()
   rating: number;
 
