@@ -20,7 +20,10 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() dto: AuthDto) {}
+  async login(@Body() dto: AuthDto) {
+    const user = await this.authService.validateUser(dto.login, dto.password);
+    return this.authService.login(dto.login);
+  }
 
   // delete on production
   @Get()
