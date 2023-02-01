@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 class ProductCharacteristic {
   @Prop()
@@ -9,7 +11,15 @@ class ProductCharacteristic {
 }
 
 @Schema()
-export class ProductModel {
+export class ProductModel extends Document {
+  @Prop({
+    type: String,
+    default: function generateUUID() {
+      return uuidv4();
+    },
+  })
+  _id: string;
+
   @Prop()
   image: string;
 
