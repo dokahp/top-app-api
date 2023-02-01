@@ -26,7 +26,7 @@ export class ProductController {
   }
 
   @Get(':id')
-  async get(@Param('id', ParseUUIDPipe) id: string) {
+  async get(@Param('id') id: string) {
     const product = await this.productService.findById(id);
     if (!product) {
       throw new HttpException('error: no such product', HttpStatus.NOT_FOUND);
@@ -54,5 +54,7 @@ export class ProductController {
 
   @HttpCode(HttpStatus.OK)
   @Post('find')
-  async find(@Body() dto: FindProductDto) {}
+  async find(@Body() dto: FindProductDto) {
+    return this.productService.findProductsWithReviews(dto);
+  }
 }
