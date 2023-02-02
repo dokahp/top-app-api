@@ -29,7 +29,13 @@ export class ProductService {
     return this.productModel.findByIdAndUpdate(id, dto, { new: true }).exec();
   }
 
-  async findProductsWithReviews(dto: FindProductDto) {
+  async findProductsWithReviews(dto: FindProductDto): Promise<
+    (ProductModel & {
+      reviews: ReviewModel[];
+      reviewCount: number;
+      reviewAvg: number;
+    })[]
+  > {
     return await this.productModel
       .aggregate([
         {
@@ -47,7 +53,7 @@ export class ProductService {
         },
         {
           $lookup: {
-            from: 'Review',
+            from: 'reviews',
             localField: '_id',
             foreignField: 'productId',
             as: 'reviews',
@@ -60,9 +66,9 @@ export class ProductService {
             reviews: {
               $function: {
                 body: `function (reviews) {
-								reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-								return reviews;
-							}`,
+            		reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            		return reviews;
+            	}`,
                 args: ['$reviews'],
                 lang: 'js',
               },
