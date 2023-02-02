@@ -9,7 +9,9 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
 } from '@nestjs/common';
+import { IdValidationPipe } from 'src/pipes/id-validation.pipe';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FindProductDto } from './dto/product-find.dto';
 import { ProductModel } from './product.model/product.model';
@@ -25,7 +27,7 @@ export class ProductController {
   }
 
   @Get(':id')
-  async get(@Param('id') id: string) {
+  async get(@Param('id', IdValidationPipe) id: string) {
     const product = await this.productService.findById(id);
     if (!product) {
       throw new HttpException('error: no such product', HttpStatus.NOT_FOUND);
@@ -34,7 +36,10 @@ export class ProductController {
   }
 
   @Patch('id')
-  async update(@Param('id') id: string, @Body() dto: ProductModel) {
+  async update(
+    @Param('id', IdValidationPipe) id: string,
+    @Body() dto: ProductModel,
+  ) {
     const updatedProduct = await this.productService.updateById(id, dto);
     if (!updatedProduct) {
       throw new HttpException('error: no such product', HttpStatus.NOT_FOUND);
@@ -43,7 +48,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id', IdValidationPipe) id: string) {
     const deletedProduct = await this.productService.deleteById(id);
     if (!deletedProduct) {
       throw new HttpException('error: no such product', HttpStatus.NOT_FOUND);
