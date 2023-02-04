@@ -1,10 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { FindProductDto } from 'src/product/dto/product-find.dto';
 import { CreateTopPageDto } from './dto/create-top-page.dto';
 import { FindTopPageDto } from './dto/find-top-page.dto';
-import { UpdateTopPageDto } from './dto/update-top-page.dto';
 import { TopPageModel } from './top-page.model/top-page.model';
 
 @Injectable()
