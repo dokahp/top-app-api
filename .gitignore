@@ -2,7 +2,8 @@
 /dist
 /node_modules
 /uploads
-/mongo-data-4.4
+/mongo-data-4.4/*
+/mongo-data-4.4/
 # Logs
 logs
 *.log
