@@ -5,14 +5,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
+import { JwtAuthGuard } from './guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // only admin can register
   @Post('register')
   async register(@Body() dto: AuthDto) {
     return this.authService.createUser(dto);
@@ -25,7 +28,7 @@ export class AuthController {
     return this.authService.login(dto.login);
   }
 
-  // delete on production
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllUsers() {
     return this.authService.getListOfUsers();

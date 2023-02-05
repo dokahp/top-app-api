@@ -22,6 +22,8 @@ export class ReviewController {
     private readonly reviewService: ReviewService,
     private readonly telegramService: TelegramService,
   ) {}
+
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() dto: CreateReviewDto) {
     return this.reviewService.create(dto);
@@ -38,6 +40,7 @@ export class ReviewController {
     return this.telegramService.sendMessage(message);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   async delete(@Param('id', IdValidationPipe) id: string) {
     const deletedReview = await this.reviewService.delete(id);
@@ -49,7 +52,6 @@ export class ReviewController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('byProduct/:productId')
   async getByProduct(
     @Param('productId', IdValidationPipe) productId: string,
