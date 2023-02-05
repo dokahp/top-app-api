@@ -7,12 +7,12 @@ import { format } from 'date-fns';
 import { path } from 'app-root-path';
 import { ensureDir, writeFile } from 'fs-extra';
 // ensuredir обеспечивает наличие директории, если ее нет - создаст
+import * as sharp from 'sharp';
+import { MFile } from './dto/mfile.class';
 
 @Injectable()
 export class FilesService {
-  async saveFiles(
-    files: Express.Multer.File[],
-  ): Promise<FileElementResponse[]> {
+  async saveFiles(files: MFile[]): Promise<FileElementResponse[]> {
     const res: FileElementResponse[] = [];
     const dateFolderNameForSavefiles = format(new Date(), 'yyyy-MM-dd');
     const uploadFolderPath = `${path}/uploads/${dateFolderNameForSavefiles}`;
@@ -27,5 +27,9 @@ export class FilesService {
       });
     }
     return res;
+  }
+
+  async convertToWebp(file: Buffer): Promise<Buffer> {
+    return await sharp(file).webp().toBuffer();
   }
 }
