@@ -12,13 +12,13 @@ import { MFile } from './dto/mfile.class';
 
 @Injectable()
 export class FilesService {
-  async saveFiles(files: MFile[]): Promise<FileElementResponse[]> {
+  async saveFiles(files: Promise<MFile[]>): Promise<FileElementResponse[]> {
     const res: FileElementResponse[] = [];
     const dateFolderNameForSavefiles = format(new Date(), 'yyyy-MM-dd');
     const uploadFolderPath = `${path}/uploads/${dateFolderNameForSavefiles}`;
     await ensureDir(uploadFolderPath);
 
-    for (const file of files) {
+    for (const file of await files) {
       await writeFile(`${uploadFolderPath}/${file.originalname}`, file.buffer);
 
       res.push({
