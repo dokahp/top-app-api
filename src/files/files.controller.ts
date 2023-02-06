@@ -28,6 +28,7 @@ export class FilesController {
     const saveArray: Promise<MFile[]> = Promise.all(
       files.map(async (file: Express.Multer.File) => {
         let saveFile: MFile = new MFile(file);
+        console.log(this.filesService.isCyrillicSymbols(file.originalname));
         if (file.mimetype.includes('image')) {
           const convertToWebp = await this.filesService.convertToWebp(
             file.buffer,

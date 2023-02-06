@@ -32,4 +32,8 @@ export class FilesService {
   async convertToWebp(file: Buffer): Promise<Buffer> {
     return await sharp(file).webp().toBuffer();
   }
+
+  isCyrillicSymbols(fileName: string) {
+    return fileName.match(/[^\u0000-\u007f]/) ? true : false;
+  }
 }
