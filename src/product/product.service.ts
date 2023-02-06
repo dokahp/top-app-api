@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Rate } from 'src/national-rates/model/national-rates.model';
+import { NationalRatesService } from 'src/national-rates/national-rates.service';
 import { ReviewModel } from 'src/review/review.model/review.model';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FindProductDto } from './dto/product-find.dto';
@@ -10,6 +12,7 @@ import { ProductModel } from './product.model/product.model';
 export class ProductService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<ProductModel>,
+    private readonly nationalRatesService: NationalRatesService,
   ) {}
 
   async create(dto: CreateProductDto) {
@@ -36,11 +39,30 @@ export class ProductService {
       reviewAvg: number;
     })[]
   > {
+    const lastRatesRecord =
+      await this.nationalRatesService.getLastRatesFromDB();
+    let { rates } = lastRatesRecord;
+    const rubToUsdRate: Rate = rates.find(
+      (rate: Rate) => rate.buyIso === 'RUB' && rate.sellIso === 'USD',
+    );
+    const rubToEurRate = rates.find(
+      (rate: Rate) => rate.buyIso === 'RUB' && rate.sellIso === 'EUR',
+    );
     return await this.productModel
       .aggregate([
         {
           $match: {
             categories: dto.category,
+          },
+        },
+        {
+          $addFields: {
+            priceUSD: {
+              $divide: ['$price', rubToUsdRate.buyRate],
+            },
+            priceEUR: {
+              $divide: ['$price', rubToEurRate.buyRate],
+            },
           },
         },
         {
