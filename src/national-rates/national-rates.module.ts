@@ -4,6 +4,7 @@ import { NationalRatesController } from './national-rates.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NationalRatesSchema } from './model/national-rates.model';
 import { HttpModule } from '@nestjs/axios';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { HttpModule } from '@nestjs/axios';
       { name: 'NationalRates', schema: NationalRatesSchema },
     ]),
     HttpModule,
+    ScheduleModule.forRoot(),
   ],
   providers: [NationalRatesService],
   controllers: [NationalRatesController],

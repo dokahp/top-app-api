@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 import { NationalRates } from './model/national-rates.model';
@@ -33,5 +34,11 @@ export class NationalRatesService {
       .limit(1)
       .findOne({ 'rates.buyIso': 'RUB', 'rates.sellIso': 'USD' })
       .exec();
+  }
+
+  // every day at 15-00
+  @Cron(CronExpression.EVERY_DAY_AT_3PM)
+  updateRates() {
+    this.getTodayRates();
   }
 }
