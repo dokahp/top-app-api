@@ -12,7 +12,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { FileElementResponse } from './dto/file-element.response';
 import { MFile } from './dto/mfile.class';
 import { FilesService } from './files.service';
-import { transliterate as tr, slugify } from 'transliteration';
 
 @Controller('files')
 export class FilesController {
@@ -28,10 +27,7 @@ export class FilesController {
     const saveArray: Promise<MFile[]> = Promise.all(
       files.map(async (file: Express.Multer.File) => {
         let saveFile: MFile = new MFile(file);
-
-        if (this.filesService.isCyrillicSymbols(file.originalname)) {
-          file.originalname = slugify(file.originalname);
-        }
+        file.originalname = this.filesService.changeFileName(file.originalname);
         if (file.mimetype.includes('image')) {
           const convertToWebp = await this.filesService.convertToWebp(
             file.buffer,

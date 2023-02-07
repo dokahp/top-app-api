@@ -52,7 +52,6 @@
     "rxjs": "^7.2.0",
     "sharp": "^0.31.3",
     "telegraf": "^4.11.2",
-    "transliteration": "^2.3.5",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

@@ -36,4 +36,18 @@ export class FilesService {
   isCyrillicSymbols(fileName: string) {
     return fileName.match(/[^\u0000-\u007f]/) ? true : false;
   }
+
+  cyrillicEncodingToUtf8(str: string) {
+    return Buffer.from(str, 'latin1').toString('utf-8');
+  }
+
+  changeFileName(fileName: string) {
+    const isCyrillic = this.isCyrillicSymbols(fileName);
+
+    if (isCyrillic) {
+      const newFileName = this.cyrillicEncodingToUtf8(fileName);
+      return newFileName;
+    }
+    return fileName;
+  }
 }
