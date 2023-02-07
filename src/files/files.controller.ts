@@ -1,6 +1,7 @@
 import {
   Controller,
   HttpCode,
+  HttpException,
   HttpStatus,
   Post,
   UploadedFiles,
@@ -22,12 +23,28 @@ export class FilesController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('files'))
   async uploadFile(
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles()
+    files: Array<Express.Multer.File>,
   ): Promise<FileElementResponse[]> {
+    // VALIDATION: CHECK EACH FILE TYPE AND EACH FILE SIZE
+    const allowFiles = files.find(
+      (file: Express.Multer.File) =>
+        !file.mimetype.includes('image') && file.size > 600000,
+    );
+    if (allowFiles) {
+      throw new HttpException(
+        'error: files type must be image and file size must be less than 600 kilobytes',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    // END OF VALIDATION
+
     const saveArray: Promise<MFile[]> = Promise.all(
       files.map(async (file: Express.Multer.File) => {
+        console.log(file.mimetype);
         let saveFile: MFile = new MFile(file);
         file.originalname = this.filesService.changeFileName(file.originalname);
+
         if (file.mimetype.includes('image')) {
           const convertToWebp = await this.filesService.convertToWebp(
             file.buffer,
