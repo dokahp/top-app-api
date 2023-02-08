@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
@@ -32,6 +32,13 @@ export class ProductService {
   }
 
   async deleteById(id: string) {
+    const product = await this.findById(id);
+    if (!product) {
+      throw new HttpException('error: no such product', HttpStatus.NOT_FOUND);
+    }
+
+    this.fileService.deleteProductFile(id);
+
     return this.productModel.findByIdAndDelete(id).exec();
   }
 

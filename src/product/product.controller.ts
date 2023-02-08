@@ -73,11 +73,12 @@ export class ProductController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id', IdValidationPipe) id: string) {
-    const deletedProduct = await this.productService.deleteById(id);
-    if (!deletedProduct) {
-      throw new HttpException('error: no such product', HttpStatus.NOT_FOUND);
-    }
-    return deletedProduct;
+    return await this.productService.deleteById(id);
+    // const deletedProduct = await this.productService.deleteById(id);
+    // if (!deletedProduct) {
+    //   throw new HttpException('error: no such product', HttpStatus.NOT_FOUND);
+    // }
+    // return deletedProduct;
   }
 
   @HttpCode(HttpStatus.OK)

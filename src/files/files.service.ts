@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 // которая не будет отличается ни при разработке,
 // ни на продакшене, ни в любой операционной ситстеме
 import { path } from 'app-root-path';
-import { ensureDir, writeFile } from 'fs-extra';
+import { ensureDir, writeFile, remove } from 'fs-extra';
 // ensuredir обеспечивает наличие директории, если ее нет - создаст
 import * as sharp from 'sharp';
 import { MFile } from './dto/mfile.class';
@@ -40,6 +40,11 @@ export class FilesService {
     return {
       url: `static/product/${id}/${file.originalname}`,
     };
+  }
+
+  async deleteProductFile(filesFolder: string) {
+    const pathToProductFolder = `${path}/uploads/product/${filesFolder}`;
+    await remove(pathToProductFolder);
   }
 
   async convertToWebp(file: Buffer): Promise<Buffer> {
