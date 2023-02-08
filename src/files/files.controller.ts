@@ -41,7 +41,6 @@ export class FilesController {
 
     const saveArray: Promise<MFile[]> = Promise.all(
       files.map(async (file: Express.Multer.File) => {
-        console.log(file.mimetype);
         let saveFile: MFile = new MFile(file);
         file.originalname = this.filesService.changeFileName(file.originalname);
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { FilesService } from 'src/files/files.service';
 import { Rate } from 'src/national-rates/model/national-rates.model';
 import { NationalRatesService } from 'src/national-rates/national-rates.service';
 import { ReviewModel } from 'src/review/review.model/review.model';
@@ -13,10 +14,17 @@ export class ProductService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<ProductModel>,
     private readonly nationalRatesService: NationalRatesService,
+    private readonly fileService: FilesService,
   ) {}
 
   async create(dto: CreateProductDto) {
     return await this.productModel.create(dto);
+  }
+
+  async uploadProductImage(file: Express.Multer.File, id: string) {
+    const uploadedFileUrl = await this.fileService.productImageUpload(file, id);
+    const { url } = uploadedFileUrl;
+    return this.updateImageProductUrl(id, url);
   }
 
   async findById(id: string) {
@@ -27,7 +35,14 @@ export class ProductService {
     return this.productModel.findByIdAndDelete(id).exec();
   }
 
-  async updateById(id: string, dto: Partial<CreateProductDto>) {
+  async updateImageProductUrl(id: string, imageSrc: string) {
+    await this.productModel
+      .updateOne({ _id: id }, { $set: { image: imageSrc } })
+      .exec();
+    return this.findById(id);
+  }
+
+  async updateById(id: string, dto: CreateProductDto) {
     // new true возвращает всегда уже новый объект обновленный, по умолчанию старый
     return this.productModel.findByIdAndUpdate(id, dto, { new: true }).exec();
   }

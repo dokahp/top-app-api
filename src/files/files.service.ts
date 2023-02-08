@@ -9,6 +9,7 @@ import { ensureDir, writeFile } from 'fs-extra';
 // ensuredir обеспечивает наличие директории, если ее нет - создаст
 import * as sharp from 'sharp';
 import { MFile } from './dto/mfile.class';
+import { ProductImageResponse } from './dto/product-image.response';
 
 @Injectable()
 export class FilesService {
@@ -27,6 +28,18 @@ export class FilesService {
       });
     }
     return res;
+  }
+
+  async productImageUpload(
+    file: Express.Multer.File,
+    id: string,
+  ): Promise<ProductImageResponse> {
+    const uploadFolderPath = `${path}/uploads/product/${id}`;
+    await ensureDir(uploadFolderPath);
+    await writeFile(`${uploadFolderPath}/${file.originalname}`, file.buffer);
+    return {
+      url: `static/product/${id}/${file.originalname}`,
+    };
   }
 
   async convertToWebp(file: Buffer): Promise<Buffer> {
