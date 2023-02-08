@@ -10,5 +10,6 @@ import { ReviewService } from './review.service';
     MongooseModule.forFeature([{ name: 'Review', schema: ReviewSchema }]),
   ],
   providers: [ReviewService],
+  exports: [ReviewService],
 })
 export class ReviewModule {}

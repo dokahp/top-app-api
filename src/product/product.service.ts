@@ -5,6 +5,7 @@ import { FilesService } from 'src/files/files.service';
 import { Rate } from 'src/national-rates/model/national-rates.model';
 import { NationalRatesService } from 'src/national-rates/national-rates.service';
 import { ReviewModel } from 'src/review/review.model/review.model';
+import { ReviewService } from 'src/review/review.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FindProductDto } from './dto/product-find.dto';
 import { ProductModel } from './product.model/product.model';
@@ -15,6 +16,7 @@ export class ProductService {
     @InjectModel('Product') private readonly productModel: Model<ProductModel>,
     private readonly nationalRatesService: NationalRatesService,
     private readonly fileService: FilesService,
+    private readonly reviewService: ReviewService,
   ) {}
 
   async create(dto: CreateProductDto) {
@@ -38,6 +40,7 @@ export class ProductService {
     }
 
     this.fileService.deleteProductFile(id);
+    await this.reviewService.deleteByProductId(id);
 
     return this.productModel.findByIdAndDelete(id).exec();
   }
