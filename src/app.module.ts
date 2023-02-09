@@ -9,6 +9,7 @@ import { getMongoConfig } from './configs/mongo.config';
 import { FilesModule } from './files/files.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { getTelegramConfig } from './configs/telegram.config';
+import { NationalRatesModule } from './national-rates/national-rates.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { getTelegramConfig } from './configs/telegram.config';
       inject: [ConfigService],
       useFactory: getTelegramConfig,
     }),
+    NationalRatesModule,
   ],
 })
 export class AppModule {}

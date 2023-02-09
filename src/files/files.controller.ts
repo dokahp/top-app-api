@@ -1,13 +1,14 @@
 import {
   Controller,
   HttpCode,
+  HttpException,
   HttpStatus,
   Post,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { FileElementResponse } from './dto/file-element.response';
 import { MFile } from './dto/mfile.class';
@@ -20,20 +21,42 @@ export class FilesController {
   @HttpCode(HttpStatus.OK)
   @Post('upload')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('files'))
+  @UseInterceptors(FilesInterceptor('files'))
   async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles()
+    files: Array<Express.Multer.File>,
   ): Promise<FileElementResponse[]> {
-    const saveArray: MFile[] = [new MFile(file)];
-    if (file.mimetype.includes('image')) {
-      const convertToWebp = await this.filesService.convertToWebp(file.buffer);
-      saveArray.push(
-        new MFile({
-          originalname: `${file.originalname.split('.')[0]}.webp`,
-          buffer: convertToWebp,
-        }),
+    // VALIDATION: CHECK EACH FILE TYPE AND EACH FILE SIZE
+    const allowFiles = files.find(
+      (file: Express.Multer.File) =>
+        !file.mimetype.includes('image') && file.size > 600000,
+    );
+    if (allowFiles) {
+      throw new HttpException(
+        'error: files type must be image and file size must be less than 600 kilobytes',
+        HttpStatus.BAD_REQUEST,
       );
     }
-    return this.filesService.saveFiles(saveArray);
+    // END OF VALIDATION
+
+    const saveArray: Promise<MFile[]> = Promise.all(
+      files.map(async (file: Express.Multer.File) => {
+        let saveFile: MFile = new MFile(file);
+        file.originalname = this.filesService.changeFileName(file.originalname);
+
+        if (file.mimetype.includes('image')) {
+          const convertToWebp = await this.filesService.convertToWebp(
+            file.buffer,
+          );
+          saveFile = new MFile({
+            originalname: `${file.originalname.split('.')[0]}.webp`,
+            buffer: convertToWebp,
+          });
+        }
+        return saveFile;
+      }),
+    );
+
+    return await this.filesService.saveFiles(saveArray);
   }
 }

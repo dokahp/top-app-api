@@ -16,13 +16,14 @@ class ProductCharacteristicDto {
 }
 
 export class CreateProductDto {
-  @IsString()
+  @IsOptional()
   image: string;
 
   @IsString()
   title: string;
 
   @IsNumber()
+  @Type(() => Number)
   price: number;
 
   @IsOptional()
@@ -30,6 +31,7 @@ export class CreateProductDto {
   oldPrice?: number;
 
   @IsNumber()
+  @Type(() => Number)
   credit: number;
 
   @IsString()
